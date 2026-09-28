@@ -100,12 +100,20 @@ app.whenReady().then(async () => {
       cancelRequest = null; qrWindow = null;
       cb?.();
     });
-    const dataUrl = await QRCode.toDataURL(details.qr, { width: 320, margin: 4, errorCorrectionLevel: 'M' });
-    if (current.isDestroyed()) return;
-    await current.loadFile(path.join(__dirname, 'qr.html'));
-    if (!current.isDestroyed()) {
-      current.webContents.send('qr', { dataUrl, rp: details.relyingPartyId });
-      if (lastStatus) current.webContents.send('status', lastStatus);
+    try {
+      const dataUrl = await QRCode.toDataURL(details.qr, { width: 320, margin: 4, errorCorrectionLevel: 'M' });
+      if (current.isDestroyed()) return;
+      await current.loadFile(path.join(__dirname, 'qr.html'));
+      if (!current.isDestroyed()) {
+        current.webContents.send('qr', { dataUrl, rp: details.relyingPartyId });
+        if (lastStatus) current.webContents.send('status', lastStatus);
+      }
+    } catch (error) {
+      // Cancellation can destroy the window while its local page is loading.
+      if (current.isDestroyed()) return;
+      log(`QR window failed: ${error.message}`);
+      if (qrWindow === current) closeQr();
+      cancel();
     }
   });
   session.on('webauthn-hybrid-status', (_event, details) => {
