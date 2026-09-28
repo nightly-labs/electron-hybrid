@@ -1,5 +1,5 @@
 {
-  "name": "@nightly-labs/electron-hybrid",
+  "name": "@nightlylabs/electron-hybrid",
   "version": "44.4.5-hybrid.1",
   "description": "Locally built Electron with opt-in native phone passkeys",
   "type": "module",

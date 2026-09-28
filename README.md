@@ -17,7 +17,7 @@ binary. A passing regression suite alone does not verify a physical phone.
 ## Install from npm
 
 ```sh
-npm install --save-dev @nightly-labs/electron-hybrid@next
+npm install --save-dev @nightlylabs/electron-hybrid@next
 npx electron-hybrid /absolute/path/to/your/app
 ```
 
@@ -35,7 +35,7 @@ The package also exports `distPath` and `executablePath` as ESM values.
 Your application's Electron API imports remain `import { app } from 'electron'`.
 
 For TypeScript, keep `electron@44.4.5` as a development dependency and add
-`"@nightly-labs/electron-hybrid/types"` to `compilerOptions.types`.
+`"@nightlylabs/electron-hybrid/types"` to `compilerOptions.types`.
 The stock Electron package supplies API definitions; run your app with
 `electron-hybrid` to use the patched runtime.
 

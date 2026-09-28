@@ -27,7 +27,7 @@ test('packed npm package installs and launches the pinned runtime', {skip:proces
   delete env.ELECTRON_HYBRID_SKIP_DOWNLOAD;
   // Use public download by default; local release is an optional offline test.
   run('npm', ['install', path.join(dir,packed.filename), '--no-audit', '--no-fund', '--foreground-scripts'], {env});
-  const packageDir = path.join(dir,'node_modules/@nightly-labs/electron-hybrid');
+  const packageDir = path.join(dir,'node_modules/@nightlylabs/electron-hybrid');
   const cli = path.join(packageDir,'runtime/cli.mjs');
   const api = await import(pathToFileURL(path.join(packageDir,'runtime/index.mjs')));
   assert.equal(run(process.execPath,[cli,'--version']).trim(),'v44.4.5');
