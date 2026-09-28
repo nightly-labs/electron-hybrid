@@ -65,6 +65,15 @@ app.whenReady().then(async () => {
   assert.equal(qrs[0].origin,origin); assert.equal(qrs[0].relyingPartyId,'localhost');
   assert.equal(qrs[0].frame,win.webContents.mainFrame);
   assert.ok(qrs[0].requestId);
+  ses.setWebAuthnHybridEnabled(false);
+  const disabled=await windowFor(ses);
+  await start(disabled); await sleep(600);
+  assert.equal(qrs.length,1);
+  assert.equal(await win.webContents.executeJavaScript('window.result'),null);
+  await disabled.webContents.executeJavaScript('controller.abort()');
+  await result(disabled,'AbortError'); disabled.destroy();
+  ses.setWebAuthnHybridEnabled(true);
+  passed.push('disabling suppresses new requests without cancelling an active one');
   qrs[0].cancel(); qrs[0].cancel();
   await result(win,'NotAllowedError');
   await until(()=>statuses.some(s=>s.requestId===qrs[0].requestId&&s.status==='closed'),'cancel closed');
@@ -96,6 +105,10 @@ app.whenReady().then(async () => {
   assert.equal(await b.webContents.executeJavaScript('window.result'),null);
   qb.cancel(); await result(b,'NotAllowedError');
   passed.push('concurrent windows cancel independently');
+  ses.once('webauthn-hybrid-qr',(_event,_details,cancel)=>cancel());
+  await start(a); await result(a,'NotAllowedError');
+  await until(()=>qrs.length===7&&statuses.some(s=>s.requestId===qrs[6].requestId&&s.status==='closed'),'synchronous cancel closed');
+  passed.push('synchronous cancellation inside QR listener');
   ses.removeListener('webauthn-hybrid-qr',listener);
   await start(a); await result(a,'NotAllowedError');
   passed.push('enabled request without UI listener cancels');

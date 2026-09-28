@@ -94,6 +94,7 @@ export ELECTRON_OUT="$ELECTRON_SRC/out/Default"
 npm run apply
 npm run build
 npm test
+npm run test:tooling
 npm run package
 ```
 
@@ -172,7 +173,10 @@ passkey entitlement is added by this patch.
 
 Release assets contain the runtime zip, checksums, manifest (upstream SHA,
 patch SHA, binary SHA and build arguments), native test report, patch and types.
-Upload only after local build and tests complete. No hosted CI compiles Electron.
+Commit source changes, run `npm run package`, then `npm run release:local` to
+verify checksums, push the version tag and publish a GitHub prerelease. The
+release command refuses to overwrite an existing release or publish a package
+from a different source commit. No hosted CI compiles Electron.
 
 For an upgrade, save the current patch and binary, fetch the new stable tag,
 sync dependencies, port the patch, update `upstream.json`, rebuild and rerun

@@ -1,12 +1,15 @@
 import { readFileSync, writeFileSync, mkdirSync, copyFileSync } from 'node:fs';
 import path from 'node:path';
-import { root,out,config,assertPlatform,assertUpstream } from './common.mjs';
+import { root,out,config,assertPlatform,assertUpstream,capture } from './common.mjs';
 import { sha256 } from './hash.mjs';
+import { archiveEntrySha256 } from './archive-hash.mjs';
 assertPlatform(); assertUpstream();
 const artifactDir=path.join(root,'artifacts',config.releaseTag);
 const patchSha256=await sha256(path.join(root,'patches/native-hybrid.patch'));
 const binary=path.join(out,'Electron.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Electron Framework');
 const binarySha256=await sha256(binary);
+const zippedBinarySha256=await archiveEntrySha256(path.join(out,'dist.zip'),'Electron.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Electron Framework');
+if(zippedBinarySha256!==binarySha256) throw new Error('dist.zip does not contain the tested framework; rebuild electron_dist_zip.');
 const tests=JSON.parse(readFileSync(path.join(root,'artifacts/native-tests.json'),'utf8'));
 if(!tests.ok||tests.electron!==config.electronVersion||tests.patchSha256!==patchSha256||tests.binarySha256!==binarySha256) throw new Error('Run npm test on the current build and patch before packaging.');
 const actualVersion=readFileSync(path.join(out,'version'),'utf8').trim();
@@ -18,7 +21,7 @@ copyFileSync(path.join(root,'patches/native-hybrid.patch'),path.join(artifactDir
 copyFileSync(path.join(root,'artifacts/native-tests.json'),path.join(artifactDir,'native-tests.json'));
 copyFileSync(path.join(root,'types/hybrid.d.ts'),path.join(artifactDir,'hybrid.d.ts'));
 const checksum=await sha256(path.join(artifactDir,filename));
-const manifest={...config,filename,sha256:checksum,patchSha256,binarySha256,builtAt:new Date().toISOString(),signing:'local-development; not Developer ID signed or notarized',gnArgs:readFileSync(path.join(out,'args.gn'),'utf8')};
+const manifest={...config,filename,sha256:checksum,patchSha256,binarySha256,sourceRepositoryCommit:capture('git',['rev-parse','HEAD'],{cwd:root}),builtAt:new Date().toISOString(),signing:'local-development; not Developer ID signed or notarized',gnArgs:readFileSync(path.join(out,'args.gn'),'utf8')};
 writeFileSync(path.join(artifactDir,'manifest.json'),JSON.stringify(manifest,null,2)+'\n');
 let checksums='';
 for(const file of [filename,'manifest.json','native-hybrid.patch','native-tests.json','hybrid.d.ts']) checksums+=`${await sha256(path.join(artifactDir,file))}  ${file}\n`;

@@ -9,7 +9,11 @@
     "build": "node scripts/build-local.mjs",
     "test": "node scripts/test-native.mjs",
     "package": "node scripts/package-local.mjs",
-    "example": "node scripts/run-example.mjs"
+    "example": "node scripts/run-example.mjs",
+    "release:local": "node scripts/release-local.mjs",
+    "test:tooling": "node --test tests/tooling.test.mjs"
   },
-  "engines": { "node": ">=22" }
+  "engines": {
+    "node": ">=22"
+  }
 }
