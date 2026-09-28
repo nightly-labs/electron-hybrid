@@ -10,4 +10,6 @@ if(!/^[1-9][0-9]*$/.test(jobs)) throw new Error('BUILD_JOBS must be a positive i
 // removed by an upgrade cannot linger in the distributed runtime.
 rmSync(path.join(out,'dist.zip'),{force:true});
 // No remote build service or hosted runner is used.
-run(path.join(src,'third_party/ninja/ninja'),['-C',out,'electron','electron_dist_zip','-j',jobs],{cwd:src});
+// Node's config generator invokes gn by name during the build.
+const env={...process.env,PATH:[path.join(src,'buildtools/mac'),process.env.PATH].filter(Boolean).join(path.delimiter)};
+run(path.join(src,'third_party/ninja/ninja'),['-C',out,'electron','electron_dist_zip','-j',jobs],{cwd:src,env});
