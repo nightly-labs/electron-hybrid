@@ -103,7 +103,7 @@ index 8bd1071992..8906698efa 100644
  
    // The profile id to enable the network throttler.
 diff --git a/shell/browser/webauthn/electron_authenticator_request_client_delegate.cc b/shell/browser/webauthn/electron_authenticator_request_client_delegate.cc
-index 90510c01cc..d36e836f94 100644
+index 90510c01cc..89ad88b002 100644
 --- a/shell/browser/webauthn/electron_authenticator_request_client_delegate.cc
 +++ b/shell/browser/webauthn/electron_authenticator_request_client_delegate.cc
 @@ -10,14 +10,23 @@
@@ -130,7 +130,7 @@ index 90510c01cc..d36e836f94 100644
  #include "shell/browser/javascript_environment.h"
  #include "shell/common/gin_converters/callback_converter.h"
  #include "shell/common/gin_converters/frame_converter.h"
-@@ -45,6 +54,54 @@ std::string CredentialIdFor(
+@@ -45,6 +54,58 @@ std::string CredentialIdFor(
    return {};
  }
  
@@ -172,8 +172,12 @@ index 90510c01cc..d36e836f94 100644
 +                   .ToLocalChecked();
 +  v8::Local<v8::Value> result;
 +  if (cancel) {
++    // The default converter makes even repeating callbacks one-shot in JS.
++    // This closure owns only a weak delegate and request ID, so retaining it
++    // until JS garbage collection cannot keep a request or its UI alive.
++    auto cancel_function = gin_helper::CallbackToV8Leaked(isolate, cancel);
 +    result = gin_helper::EmitEvent(isolate, wrapper, event_name, event,
-+                                   details.Build(), std::move(cancel));
++                                   details.Build(), cancel_function);
 +  } else {
 +    result = gin_helper::EmitEvent(isolate, wrapper, event_name, event,
 +                                   details.Build());
@@ -185,7 +189,7 @@ index 90510c01cc..d36e836f94 100644
  }  // namespace
  
  ElectronAuthenticatorRequestClientDelegate::
-@@ -53,7 +110,9 @@ ElectronAuthenticatorRequestClientDelegate::
+@@ -53,7 +114,9 @@ ElectronAuthenticatorRequestClientDelegate::
      : render_frame_host_id_(render_frame_host->GetGlobalId()) {}
  
  ElectronAuthenticatorRequestClientDelegate::
@@ -196,7 +200,7 @@ index 90510c01cc..d36e836f94 100644
  
  void ElectronAuthenticatorRequestClientDelegate::SetRelyingPartyId(
      const std::string& rp_id) {
-@@ -68,6 +127,7 @@ void ElectronAuthenticatorRequestClientDelegate::StartObserving(
+@@ -68,6 +131,7 @@ void ElectronAuthenticatorRequestClientDelegate::StartObserving(
  void ElectronAuthenticatorRequestClientDelegate::StopObserving(
      device::FidoRequestHandlerBase* request_handler) {
    request_handler_observation_.Reset();
@@ -204,7 +208,7 @@ index 90510c01cc..d36e836f94 100644
  }
  
  void ElectronAuthenticatorRequestClientDelegate::RegisterActionCallbacks(
-@@ -83,6 +143,121 @@ void ElectronAuthenticatorRequestClientDelegate::RegisterActionCallbacks(
+@@ -83,6 +147,121 @@ void ElectronAuthenticatorRequestClientDelegate::RegisterActionCallbacks(
          void(device::FidoRequestHandlerBase::BlePermissionCallback)>
          request_ble_permission_callback) {
    cancel_callback_ = std::move(cancel_callback);
@@ -326,7 +330,7 @@ index 90510c01cc..d36e836f94 100644
  }
  
  void ElectronAuthenticatorRequestClientDelegate::SelectAccount(
-@@ -172,10 +347,72 @@ void ElectronAuthenticatorRequestClientDelegate::SelectAccount(
+@@ -172,10 +351,72 @@ void ElectronAuthenticatorRequestClientDelegate::SelectAccount(
    }
  }
  
