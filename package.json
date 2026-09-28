@@ -1,7 +1,6 @@
 {
   "name": "@nightly-labs/electron-hybrid",
   "version": "44.4.5-hybrid.1",
-  "private": true,
   "description": "Locally built Electron with opt-in native phone passkeys",
   "type": "module",
   "scripts": {
@@ -11,9 +10,47 @@
     "package": "node scripts/package-local.mjs",
     "example": "node scripts/run-example.mjs",
     "release:local": "node scripts/release-local.mjs",
-    "test:tooling": "node --test tests/tooling.test.mjs"
+    "test:tooling": "node --test tests/tooling.test.mjs",
+    "postinstall": "node runtime/install.mjs",
+    "test:npm": "node --test tests/npm.test.mjs"
   },
   "engines": {
     "node": ">=22"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nightly-labs/electron-hybrid.git"
+  },
+  "os": [
+    "darwin"
+  ],
+  "cpu": [
+    "arm64"
+  ],
+  "main": "./runtime/index.mjs",
+  "types": "./runtime/index.d.ts",
+  "bin": {
+    "electron-hybrid": "runtime/cli.mjs"
+  },
+  "files": [
+    "runtime/",
+    "types/",
+    "upstream.json",
+    "scripts/common.mjs",
+    "scripts/hash.mjs",
+    "scripts/install-runtime.mjs"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "tag": "next",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "exports": {
+    ".": {
+      "types": "./runtime/index.d.ts",
+      "import": "./runtime/index.mjs"
+    },
+    "./types": "./types/hybrid.d.ts"
   }
 }

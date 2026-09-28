@@ -1,0 +1,18 @@
+{
+  "electronVersion": "44.4.5",
+  "electronCommit": "694f45852a0f1726cd23bfd379854de489cccb65",
+  "patchVersion": 1,
+  "releaseTag": "v44.4.5-hybrid.1",
+  "platform": "darwin",
+  "arch": "arm64",
+  "buildProfile": "testing",
+  "repository": "nightly-labs/electron-hybrid",
+  "filename": "electron-v44.4.5-hybrid.1-darwin-arm64.zip",
+  "sha256": "99f7e47b101ae6ef1305b3818cfa1ef5b448a9d526ede128468bb478efd8e096",
+  "patchSha256": "2912354d5755ff404894cd0629fb7ac641914aff70d097f4ca9c8587d628f7bc",
+  "binarySha256": "790a070eb34a67c5480806c0b00c6ad4ae999d1f2c75725ce14566f793db99fc",
+  "sourceRepositoryCommit": "5c495a1c5583b5db2e320b9bfc3c5917ba4545ce",
+  "builtAt": "2026-09-28T20:16:18.032Z",
+  "signing": "local-development; not Developer ID signed or notarized",
+  "gnArgs": "import(\"//electron/build/args/testing.gn\")\nmac_sdk_path = \"//out/Default/xcode_links/electron/MacOSX26.5.sdk\""
+}

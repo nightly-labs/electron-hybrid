@@ -14,6 +14,37 @@ verification on a local RP, and the user confirmed Google sign-in worked.
 See the current release's `native-tests.json` for automated checks on its exact
 binary. A passing regression suite alone does not verify a physical phone.
 
+## Install from npm
+
+```sh
+npm install --save-dev @nightly-labs/electron-hybrid@next
+npx electron-hybrid /absolute/path/to/your/app
+```
+
+The npm package downloads the pinned GitHub release and verifies the archive
+and extracted framework against hashes bundled in the package. It contains no
+Chromium source or binary archive. This first release supports **macOS arm64**
+only and is an optimized testing build, without Developer ID signing or
+notarization. No GitHub login is required for the public binary download.
+
+The launcher uses macOS LaunchServices for Bluetooth permission attribution.
+`npx electron-hybrid --version` prints the runtime version;
+`npx electron-hybrid --print-dist` prints the distribution directory for
+`electron-builder`'s `electronDist` (use `electronVersion: "44.4.5"`).
+The package also exports `distPath` and `executablePath` as ESM values.
+Your application's Electron API imports remain `import { app } from 'electron'`.
+
+For TypeScript, keep `electron@44.4.5` as a development dependency and add
+`"@nightly-labs/electron-hybrid/types"` to `compilerOptions.types`.
+The stock Electron package supplies API definitions; run your app with
+`electron-hybrid` to use the patched runtime.
+
+If your package manager skips install scripts, run `npx electron-hybrid install`.
+Set `ELECTRON_HYBRID_SKIP_DOWNLOAD=1` to skip the install-time download, or
+`ELECTRON_HYBRID_RELEASE_DIR` to an existing release directory for offline
+installation. Offline archives must match the same bundled hashes.
+Sign and notarize your final application before distributing it to customers.
+
 ## Application API
 
 Use the patched runtime and include [`types/hybrid.d.ts`](types/hybrid.d.ts) in
