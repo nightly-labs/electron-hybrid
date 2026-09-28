@@ -103,7 +103,7 @@ index 8bd1071992..8906698efa 100644
  
    // The profile id to enable the network throttler.
 diff --git a/shell/browser/webauthn/electron_authenticator_request_client_delegate.cc b/shell/browser/webauthn/electron_authenticator_request_client_delegate.cc
-index 90510c01cc..c5a686aeb6 100644
+index 90510c01cc..d36e836f94 100644
 --- a/shell/browser/webauthn/electron_authenticator_request_client_delegate.cc
 +++ b/shell/browser/webauthn/electron_authenticator_request_client_delegate.cc
 @@ -10,14 +10,23 @@
@@ -326,26 +326,7 @@ index 90510c01cc..c5a686aeb6 100644
  }
  
  void ElectronAuthenticatorRequestClientDelegate::SelectAccount(
-@@ -152,6 +327,7 @@ void ElectronAuthenticatorRequestClientDelegate::SelectAccount(
-   // which may destroy |this| before EmitEvent returns.
-   base::WeakPtr<ElectronAuthenticatorRequestClientDelegate> weak_this =
-       weak_factory_.GetWeakPtr();
-+  auto weak_this = weak_factory_.GetWeakPtr();
-   v8::Local<v8::Value> emit_result = gin_helper::EmitEvent(
-       isolate, session_wrapper, "select-webauthn-account", event_object,
-       details,
-@@ -162,6 +338,10 @@ void ElectronAuthenticatorRequestClientDelegate::SelectAccount(
-     return;
-   }
- 
-+  if (!weak_this) {
-+    return;
-+  }
-+
-   // EventEmitter.prototype.emit() returns true iff there was at least one
-   // listener. With no listener there is no way for the app to choose an
-   // account, so cancel rather than silently picking one.
-@@ -172,10 +352,72 @@ void ElectronAuthenticatorRequestClientDelegate::SelectAccount(
+@@ -172,10 +347,72 @@ void ElectronAuthenticatorRequestClientDelegate::SelectAccount(
    }
  }
  
