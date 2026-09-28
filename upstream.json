@@ -1,0 +1,10 @@
+{
+  "electronVersion": "44.4.5",
+  "electronCommit": "694f45852a0f1726cd23bfd379854de489cccb65",
+  "patchVersion": 1,
+  "releaseTag": "v44.4.5-hybrid.1",
+  "platform": "darwin",
+  "arch": "arm64",
+  "buildProfile": "testing",
+  "repository": "nightly-labs/electron-hybrid"
+}

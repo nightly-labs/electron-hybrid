@@ -1,0 +1,15 @@
+{
+  "name": "@nightly-labs/electron-hybrid",
+  "version": "44.4.5-hybrid.1",
+  "private": true,
+  "description": "Locally built Electron with opt-in native phone passkeys",
+  "type": "module",
+  "scripts": {
+    "apply": "node scripts/apply-patch.mjs",
+    "build": "node scripts/build-local.mjs",
+    "test": "node scripts/test-native.mjs",
+    "package": "node scripts/package-local.mjs",
+    "example": "node scripts/run-example.mjs"
+  },
+  "engines": { "node": ">=22" }
+}

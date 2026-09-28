@@ -1,0 +1,10 @@
+{
+  "name": "electron-hybrid-webauthn-smoke",
+  "private": true,
+  "version": "1.0.0",
+  "main": "main.cjs",
+  "dependencies": {
+    "@simplewebauthn/server": "^13.3.0",
+    "qrcode": "^1.5.4"
+  }
+}

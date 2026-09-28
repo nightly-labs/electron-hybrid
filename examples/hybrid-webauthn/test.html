@@ -1,0 +1,42 @@
+<!doctype html><meta charset="utf-8"><title>Electron phone passkey test</title>
+<style>body{font:18px system-ui;max-width:760px;margin:60px auto;color:#173044}button{font:inherit;padding:12px 20px;margin-right:10px}pre{white-space:pre-wrap;font:15px ui-monospace;background:#eef3f6;padding:20px;border-radius:10px}</style>
+<h1>Phone passkey test</h1><p>Register a disposable <b>localhost</b> passkey on your phone, then authenticate with it. Both responses are verified by the local server. Credentials are kept in memory until this app closes.</p>
+<button onclick="register()">1. Register with phone</button><button onclick="authenticate()">2. Authenticate</button><button onclick="active?.abort()">Cancel</button><pre id="result">Ready.</pre>
+<script>
+let active;
+const report = message => { document.getElementById('result').textContent = message; console.log(message); };
+async function post(route, body) {
+  const response = await fetch(route, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body||{}) });
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.error);
+  return result;
+}
+async function perform(kind) {
+  if (active) return;
+  active = new AbortController();
+  try {
+    report('Request started. Scan the QR with your phone.');
+    const options = await post('/'+kind+'/options');
+    const publicKey = kind === 'register' ? PublicKeyCredential.parseCreationOptionsFromJSON(options) : PublicKeyCredential.parseRequestOptionsFromJSON(options);
+    const response = await navigator.credentials[kind === 'register' ? 'create':'get']({publicKey,signal:active.signal});
+    const result = await post('/'+kind+'/verify',response.toJSON());
+    if (!result.verified) throw new Error('Server verification failed');
+    report(kind.toUpperCase()+': server verified the phone response.');
+  } catch(error) { report(error.name+': '+error.message); }
+  finally { active = null; }
+}
+function register(){return perform('register');}
+function authenticate(){return perform('authenticate');}
+async function runLifecycleSmoke() {
+  for (const mediation of ['optional', 'optional', 'conditional']) {
+    const controller = new AbortController();
+    const timer = setTimeout(()=>controller.abort(),2500);
+    try {
+      await navigator.credentials.get({mediation,signal:controller.signal,publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)),rpId:'localhost',timeout:30000,userVerification:'required'}});
+      throw new Error('Unexpected credential in cancellation test');
+    } catch(error) { if (error.name !== 'AbortError') throw error; }
+    finally { clearTimeout(timer); }
+  }
+  report('Lifecycle smoke passed: two modal requests and one conditional request aborted cleanly.');
+}
+</script>

@@ -1,0 +1,15 @@
+import { mkdirSync, readFileSync, writeFileSync, existsSync, unlinkSync } from 'node:fs';
+import path from 'node:path';
+import { root,out,run,assertPlatform } from './common.mjs';
+const { sha256 } = await import('./hash.mjs');
+assertPlatform();
+const report=path.join(root,'artifacts','native-tests.json');
+mkdirSync(path.dirname(report),{recursive:true});
+if(existsSync(report)) unlinkSync(report);
+run('open',['-n','-W',path.join(out,'Electron.app'),'--args',path.join(root,'tests','electron'),'--result='+report]);
+const result=JSON.parse(readFileSync(report,'utf8'));
+result.patchSha256=await sha256(path.join(root,'patches/native-hybrid.patch'));
+result.binarySha256=await sha256(path.join(out,'Electron.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Electron Framework'));
+writeFileSync(report,JSON.stringify(result,null,2)+'\n');
+console.log(JSON.stringify(result,null,2));
+if(!result.ok) process.exitCode=1;

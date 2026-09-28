@@ -1,0 +1,17 @@
+<!doctype html><meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data:; script-src 'unsafe-inline'; style-src 'unsafe-inline'">
+<title>Use a phone or tablet</title>
+<style>body{font:16px system-ui;text-align:center;margin:24px}img{width:320px;height:320px}button{padding:8px 22px}#status{min-height:24px}</style>
+<h2>Use a phone or tablet</h2><p id="rp"></p><img id="qr" alt="Phone passkey QR code"><p id="status">Scan with your phone camera.</p><button onclick="hybrid.cancel()">Cancel</button>
+<script>
+hybrid.onQr(({dataUrl,rp})=>{document.getElementById('qr').src=dataUrl;document.getElementById('rp').textContent=rp;});
+hybrid.onStatus(status=>{document.getElementById('status').textContent=({
+'bluetooth-on':'Bluetooth is on. Scan with your phone.',
+'bluetooth-off':'Turn on Bluetooth on this Mac.',
+'bluetooth-permission-requested':'Allow Bluetooth in the macOS prompt.',
+'bluetooth-permission-denied':'Allow Electron in System Settings → Privacy & Security → Bluetooth.',
+'phone-connected':'Phone connected. Waiting for its Bluetooth signal…',
+'ble-advert-received':'Phone’s Bluetooth signal matched.',
+'ready':'Encrypted connection ready. Continue on your phone.'
+})[status]||status;});
+</script>

@@ -1,0 +1,9 @@
+/src/
+/.cipd/
+/.gclient*
+/.gcs_entries
+/artifacts/
+/node_modules/
+**/node_modules/
+.DS_Store
+*.log
