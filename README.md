@@ -159,6 +159,13 @@ point development at the patched distribution:
 ELECTRON_OVERRIDE_DIST_PATH=/absolute/path/to/electron-hybrid-runtime npx electron .
 ```
 
+For a phone test on macOS, launch through LaunchServices so the app owns its
+Bluetooth permission:
+
+```sh
+open -n /absolute/path/to/electron-hybrid-runtime/Electron.app --args /absolute/path/to/your/app
+```
+
 For electron-builder, set `electronVersion` to `44.4.5` and `electronDist` to that
 absolute runtime directory. Other packagers must likewise use the custom
 runtime rather than downloading a stock binary. Keep a startup check for
